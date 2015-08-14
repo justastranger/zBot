@@ -18,12 +18,13 @@ function tell(from, channel, args){
 		return;
 	}
 	var argArray = args.split(" ");
-	var target = argArray[0];
+	var target = argArray[0].toLowerCase();
 	argArray.shift();
 	var message = argArray.join(" ");
 	var t = {"sender": from, "message": message};
 	if(global.tells[target] == undefined) global.tells[target] = [t];
 	else global.tells[target].push(t);
+	global.bot.say(channel, "Okay, I'll tell that to "+target)
 }
 
 global.declareCommand(say, ["say"], "anyone");

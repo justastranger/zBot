@@ -1,6 +1,7 @@
 var irc = require("irc");
 var fs = require("fs");
 var wait = require("wait.for");
+var priv = require("./private.js");
 
 var permFile = "permissions.json";
 var permissions = {};
@@ -11,11 +12,11 @@ if(fs.existsSync(permFile)){ // Check for the file, if it exists, parse it. We d
 }
 
 var prefix = ","; // This is the command prefix: ",kick" and ",ban"
-var nick = "z"; // The default nick to use
+var nick = "justabot"; // The default nick to use
 				// TODO add a command to change nicks and remember the new nick(?)
 var server = "irc.esper.net"; // Server to connect to
 var options = {
-	userName: "zBot", // username for the bot
+	userName: "justabot", // username for the bot
 	password: global.password, // Password to auth with, ssshhhhh
 	realName: "justastranger's bot", // Name to show in the whois
 	messageSplit: 512, // need moar chars
@@ -28,11 +29,13 @@ var bot = new irc.Client(server, nick, options);
 
 bot.addListener("message#", function(from, channel, message){
 	console.log(channel + "=>" + from + ": " + message);
-	if(global.tells[from.toLowerCase()] != undefined){
-		for(var a in global.tells[from]){
-			bot.say(channel, global.tells[from][a].sender+"=>"+from+": "+global.tells[from][a].message);
+	var fromLower = from.toLowerCase();
+	if(global.tells[fromLower] != undefined){
+		console.log(global.tells[from.toLowerCase()]);
+		for(var a in global.tells[fromLower]){
+			global.bot.say(channel, global.tells[fromLower][a].sender+"=>"+from+": "+global.tells[fromLower][a].message);
 		}
-		delete global.tells[from];
+		delete global.tells[fromLower];
 	}
 	if(message.indexOf(prefix) == 0){
 		var args = message.substr(message.indexOf(" ")+1 ? message.indexOf(" ")+1 : message.length);
@@ -53,9 +56,10 @@ global.permProcess = function(args, from, channel){
 	var command = typeof argArray[0] == "string" ? argArray[0].toLowerCase() : null;
 	var target = typeof argArray[1] == "string" ? argArray[1].toLowerCase() : null;
 	switch (command){
+		case "add":
 		case "set":
 			// Try to identify the permission level you're trying to set, first by casting to a number, then checking to see if, as a string, the entry exists inside the permLevels object
-			var arg = typeof Number(argArray[2]) == "number" ? Number(argArray[2]) : global.permLevels[argArray[2].toLowerCase()];
+			var arg = !isNaN(Number(argArray[2])) ? Number(argArray[2]) : global.permLevels[(argArray[2]).toLowerCase()];
 			if(isNaN(arg)) { // Cry about it if we can't figure it out
 				global.bot.say(channel, "Unknown permissions level.");
 				break;
@@ -66,13 +70,24 @@ global.permProcess = function(args, from, channel){
 				permissions[target] = arg;
 				global.bot.action(channel, "will remember this.");
 			}
+			console.log(permissions);
 			break;
 		case "remove":
+		case "delete":
+		case "unset":
 			if(permissions[from] <= permissions[target]) global.bot.say(channel, "You do not have the necessary permissions to do that.");
 			else {
 				delete permissions[target];
 				global.bot.action(channel, "deletes "+target);
 			}
+			console.log(permissions);
+			break;
+		case "list":
+			global.bot.say(channel, JSON.stringify(permissions));
+			break;
+		case "commands":
+			global.bot.say(channel, JSON.stringify(global.commandPerms));
+			global.bot.say(channel, Object.keys(global.commands));
 			break;
 	}
 	fs.writeFileSync(permFile, JSON.stringify(permissions)); // Save permissions
@@ -113,18 +128,21 @@ function checkPermissions(who, command){
 function processCommand(command, from, channel, args){
 	var name;
 	// Query the server for who a person is so we don't have to rely on nicks that can change
+	// name = wait.for(global.bot.whois, from);
 	global.bot.whois(from, function(data){
 		name = data.account;
 	});
+
 	// This is essentially sleep(250);
 	// It's because the whois is asynchronous, so we have to wait for it to execute the callback.
 	// 250ms is generally a long enough wait.
 	setTimeout(function(){
+		if(name == undefined)console.log("elongate the wait");
 		//console.log(name + "->" + from) // debug line so we can see who the nick resolves to.
 		if (checkPermissions(name, command)){
 			global.commands[command](from, channel, args);
 		} else {
 			global.bot.say(channel, from + ": You do not have permission to do that.");
 		}
-	}, 250);
+	}, 1000);
 }
