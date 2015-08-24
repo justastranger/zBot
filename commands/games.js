@@ -30,3 +30,15 @@ function skye(from, channel, args){
 // Declare all aliases of the command
 global.declareCommand(roll, ["roll", "die", "d"], "anyone");
 global.declareCommand(skye, ["skye"], "anyone");
+
+var BlackJack = require("./blackjack.js");
+var blackjackObject = new BlackJack();
+
+function bj(from, channel, args){
+	console.log(blackjackObject);
+	var subcommand = args.split(" ")[0];
+	if(blackjackObject.commands[subcommand] != undefined) blackjackObject.commands[subcommand](from, channel, args);
+	else blackjackObject.commands.help(from, channel, args);
+	// console.log(subcommand);
+}
+global.declareCommand(bj, ["blackjack"], "anyone");
