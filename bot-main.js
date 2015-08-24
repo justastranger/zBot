@@ -2,6 +2,20 @@ var irc = require("irc");
 var fs = require("fs");
 var wait = require("wait.for");
 var priv = require("./private.js");
+var readline = require("readline");
+
+// We're creating a readline interface so that we can manually input commands and code
+var rl = readline.createInterface({
+	input: process.stdin,
+	output: process.stdout
+});
+// Evaluate the input (and log any errors)
+rl.on("line", function(cmd){
+	try{eval(cmd);}
+	catch(e){console.log(e);}
+});
+// Globalize the object so that it can be closed as part of the disconnect command
+global.rl = rl;
 
 var permFile = "permissions.json";
 var permissions = {};
@@ -27,7 +41,7 @@ global.tells = {};
 var bot = new irc.Client(server, nick, options);
 // The IRC package I'm using doesn't come with fucntions for kicking, banning, or unbanning
 
-bot.addListener("message#", function(from, channel, message){
+global.chanListen = function(from, channel, message){
 	console.log(channel + "=>" + from + ": " + message);
 	var fromLower = from.toLowerCase();
 	if(global.tells[fromLower] != undefined){
@@ -42,7 +56,9 @@ bot.addListener("message#", function(from, channel, message){
 		var command = message.substr(prefix.length, message.indexOf(" ")-prefix.length >= prefix.length ? message.indexOf(" ")-prefix.length : message.length - prefix.length);
 		wait.launchFiber(processCommand, command, from, channel, args);
 	}
-});
+};
+
+bot.addListener("message#", global.chanListen);
 
 bot.addListener("invite", function(channel, from, message){
 	bot.join(channel);
