@@ -40,29 +40,39 @@ var options = {
 global.tells = {};
 
 var bot = new irc.Client(server, nick, options);
-// The IRC package I'm using doesn't come with fucntions for kicking, banning, or unbanning
+// The IRC package I'm using doesn't come with functions for kicking, banning, or unbanning
 
-global.chanListen = function(from, channel, message){
+function commandListen(from, channel, message){
 	console.log(channel + "=>" + from + ": " + message);
-	var fromLower = from.toLowerCase();
-	if(global.tells[fromLower] != undefined){
-		console.log(global.tells[from.toLowerCase()]);
-		for(var a in global.tells[fromLower]){
-			global.bot.say(channel, global.tells[fromLower][a].sender+"=>"+from+": "+global.tells[fromLower][a].message);
-		}
-		delete global.tells[fromLower];
-	}
 	if(message.indexOf(prefix) == 0){
 		var args = message.substr(message.indexOf(" ")+1 ? message.indexOf(" ")+1 : message.length);
 		var command = message.substr(prefix.length, message.indexOf(" ")-prefix.length >= prefix.length ? message.indexOf(" ")-prefix.length : message.length - prefix.length);
 		wait.launchFiber(processCommand, command, from, channel, args);
 	}
-};
+}
 
-bot.addListener("message#", global.chanListen);
+function tellListen(from, channel, message){
+	var fromLower = from.toLowerCase();
+	if(global.tells[fromLower] != undefined){
+		console.log(global.tells[fromLower]);
+		for(var a in global.tells[fromLower]){
+			global.bot.say(channel, global.tells[fromLower][a].sender+"=>"+from+": "+global.tells[fromLower][a].message);
+		}
+		delete global.tells[fromLower];
+	}
+}
+
+function lewdListen(from, channel, message){
+	if(~message.indexOf("lewd")) global.bot.say(channel, "http://i.imgur.com/mgveyIr.png");
+}
+
+bot.addListener("message#", commandListen);
+bot.addListener("message#", tellListen);
+bot.addListener("message#", lewdListen);
 
 bot.addListener("invite", function(channel, from, message){
 	bot.join(channel);
+	bot.say(channel, "Hello!")
 });
 global.bot = bot; // Globally define the bot so that it can be affected from the commands that are in different files
 
@@ -103,7 +113,7 @@ global.permProcess = function(args, from, channel){
 			global.bot.say(channel, JSON.stringify(permissions));
 			break;
 		case "commands":
-			global.bot.say(channel, JSON.stringify(global.commandPerms));
+			//global.bot.say(channel, JSON.stringify(global.commandPerms));
 			global.bot.say(channel, Object.keys(global.commands));
 			break;
 	}

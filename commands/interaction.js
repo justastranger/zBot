@@ -36,7 +36,7 @@ function lewd(from, channel, args){
 	global.bot.say(channel, "http://i.imgur.com/mgveyIr.png");
 }
 global.declareCommand(asay, ["asay"], "owner");
-global.declareCommand(lewd, ["lewd"], "anyone");
+//global.declareCommand(lewd, ["lewd"], "anyone");
 global.declareCommand(help, ["help", "commands"], "anyone");
 global.declareCommand(say, ["say"], "anyone");
 global.declareCommand(action, ["do", "action"], "anyone");
