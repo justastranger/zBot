@@ -1,11 +1,13 @@
 function roll(from, channel, args){
-	if (args == "" || args.split(" ").length != 1){
-		global.bot.say(channel, "That isn't a dice roll...")
+	var reg = new RegExp("(\\d+)d(\\d+)");
+	if (!reg.test(args)){
+		global.bot.say(channel, "That isn't a dice roll...");
 		return;
 	}
 	var result = (function(args){
-		var amount = args.split("d")[0];
-		var kind = args.split("d")[1];
+		var result = args.match(reg);
+		var amount = Number(result[1]);
+		var kind = Number(result[2]);
 		var total = 0;
 		var rolls = [];
 		var roll;
@@ -35,10 +37,8 @@ var BlackJack = require("./blackjack.js");
 var blackjackObject = new BlackJack();
 
 function bj(from, channel, args){
-	console.log(blackjackObject);
 	var subcommand = args.split(" ")[0];
 	if(blackjackObject.commands[subcommand] != undefined) blackjackObject.commands[subcommand](from, channel, args);
 	else blackjackObject.commands.help(from, channel, args);
-	// console.log(subcommand);
 }
-global.declareCommand(bj, ["blackjack"], "anyone");
+global.declareCommand(bj, ["blackjack", "bj"], "anyone");

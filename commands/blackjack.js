@@ -4,10 +4,6 @@ function BlackJack() {
 
 	this.start = function(from, channel, args) {
 		// Bot should only start blackjack in its own channel!
-		//if (!args[0] || args[0].length < 2 ||args[0][0] !== "#") {
-		//	global.bot.say(from, "You have to provide a channel as first argument.");
-		//	return;
-		//}
 		for (var key = 0; key < this.games.length; key++) {
 			if (this.games[key].playIn === channel) {
 				global.bot.say(from, "There is already a game going on in " + channel);
@@ -24,8 +20,7 @@ function BlackJack() {
 		this.games[this.games.length - 1].players[from] = {
 			cards: [this.cards[Math.floor(Math.random() * this.cards.length)], this.cards[Math.floor(Math.random() * this.cards.length)]]
 		};
-		global.bot.say(channel, "### A blackjack game has been started in this channel by '" + from + "' ###");
-		global.bot.say(channel, "### If you want to join say ',blackjack join' further instructions will be send as private message ###");
+		global.bot.say(channel, "If you want to join say ',blackjack join' further instructions will be send as private message");
 		global.bot.say(channel, from +" currently has the following cards: " + this.games[this.games.length - 1].players[from].cards.join(", ") + " which gives you a total of " + this.sum(this.games[this.games.length - 1].players[from].cards));
 	};
 
@@ -52,7 +47,7 @@ function BlackJack() {
 						this.commands.done(from, channel, args);
 						tmp += " since you have 21 or more, you've been marked as done."
 					}
-					global.bot.say(channel, tmp);
+					global.bot.say(this.games[key].playIn, tmp);
 					return;
 				}
 			}
@@ -68,16 +63,18 @@ function BlackJack() {
 					if (this.everyoneDone(this.games[key].players)) {
 						this.finishGame(key);
 					}
-					global.bot.say(channel, "You already have equal or more than 21, we marked you as done.");
+					global.bot.say(this.games[key].playIn, "You already have equal or more than 21, we marked you as done.");
 				} else {
+					var asdf = false;
 					this.games[key].players[from].cards.push(this.cards[Math.floor(Math.random() * this.cards.length)]);
 					var tmp = "You currently have the following cards: " + this.games[key].players[from].cards.join(", ") + " which gives you a total of " + this.sum(this.games[key].players[from].cards)
 					if (this.sum(this.games[key].players[from].cards) < 21) tmp += " if you want another card say 'blackjack card' if you want to stop say 'blackjack done'"
 					else {
-						this.commands.done(from, channel, args);
+						asdf = true;
 						tmp += " since you have 21 or more, you've been marked as done."
 					}
-					global.bot.say(channel, tmp);
+					global.bot.say(this.games[key].playIn, tmp);
+					if(asdf) this.commands.done(from, channel, args);
 				}
 				return;
 			}
@@ -121,8 +118,8 @@ function BlackJack() {
 						players.push(k);
 					}
 				}
-				global.bot.say(channel, "This game was started by: " + this.games[key].owner + " " + Math.round((Date.now() - this.games[key].started) / 1000) + " seconds ago (you can force a game channel end after 3 minutes (180 seconds))");
-				global.bot.say(channel, "Players: " + players.join(', '));
+				global.bot.say(this.games[key].playIn, "This game was started by: " + this.games[key].owner + " " + Math.round((Date.now() - this.games[key].started) / 1000) + " seconds ago (you can force a game channel end after 3 minutes (180 seconds))");
+				global.bot.say(this.games[key].playIn, "Players: " + players.join(', '));
 			}
 		}
 	}.bind(this);
@@ -136,7 +133,7 @@ function BlackJack() {
 				count++;
 			}
 		}
-		global.bot.say(channel, from+ " disbanded " + count + " games.");
+		global.bot.say(channel, from+ " disbanded this game of blackjack.");
 	}.bind(this);
 
 	this.commands.help = function(from, channel, args) {
@@ -170,7 +167,9 @@ function BlackJack() {
 			}
 		}
 		global.bot.say(this.games[key].playIn, winner.name + " won with " + winner.points + ". The following people played: " + scores.join(', '));
-		this.games.splice(key, 1);
+		this.games[key].players = {};
+		global.bot.say(this.games[key].playIn, "Next round has started, say ',blackjack join' to join");
+		//this.games.splice(key, 1);
 	};
 
 	this.everyoneDone = function(obj) {
