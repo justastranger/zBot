@@ -31,7 +31,7 @@ var nick = "justabot"; // The default nick to use
 var server = "irc.esper.net"; // Server to connect to
 var options = {
 	userName: "justabot", // username for the bot
-	password: global.password, // Password to auth with, ssshhhhh
+	password: priv.password, // Password to auth with, ssshhhhh
 	realName: "justastranger's bot", // Name to show in the whois
 	messageSplit: 512, // need moar chars
 	channels: ["#dirtylaundry"], // Default to my personal channel
