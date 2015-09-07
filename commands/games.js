@@ -20,6 +20,7 @@ function roll(from, channel, args){
 	})(args);
 	global.bot.say(channel, "Rolled "+args+", got: "+result[0] + " with "+ result[1].join(" "));
 }
+
 function skye(from, channel, args){
 	var users = global.bot.chanData(channel).users;
 	var userArray = [];

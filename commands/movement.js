@@ -7,10 +7,10 @@ function join(from, channel, args){
 }
 
 // Parts from the current channel
-// 
 function part(from, channel, args){
 	global.bot.part(channel, args != "" ? args : "Goodbye...");
 }
+
 function disconnect(from, channel, args){
 	global.rl.close();
 	global.bot.disconnect(args != "" ? args : "Goodbye...");

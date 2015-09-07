@@ -16,6 +16,7 @@ function google(from, channel, args){
 		global.bot.say(channel, (links[0].title + " - " + links[0].link + " - " + links[0].description.replace("\n","")));
 	})
 }
+
 function gis(from, channel, args){
 	if(args == ""){
 		global.bot.say(channel, "Search for what?");
@@ -29,6 +30,7 @@ function gis(from, channel, args){
 		global.bot.say(channel, images[0].unescapedUrl);
 	})
 }
+
 function youtube(from, channel, args){
 	if(args == ""){
 		global.bot.say(channel, "Search for what?");
@@ -37,7 +39,7 @@ function youtube(from, channel, args){
 	var opts = {
 		maxResults: 1,
 		key: priv.googleAPIKey
-	}
+	};
 	youtubeSearch(args, opts, function(err, result){
 		if (err) {
 			global.bot.say(channel, err);
