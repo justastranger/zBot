@@ -12,8 +12,9 @@ function part(from, channel, args){
 	global.bot.part(channel, args != "" ? args : "Goodbye...");
 }
 function disconnect(from, channel, args){
-	global.bot.disconnect(args != "" ? args : "Goodbye...");
 	global.rl.close();
+	global.bot.disconnect(args != "" ? args : "Goodbye...");
+	process.exit();
 }
 
 global.declareCommand(join, ["join"], "op");
