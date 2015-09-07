@@ -53,16 +53,21 @@ function commandListen(from, channel, message){
 
 function tellListen(from, channel, message){
 	var fromLower = from.toLowerCase();
+	// Check to see if a person has tells
 	if(global.tells[fromLower] != undefined){
+		// Log them all for debug purposes
 		console.log(global.tells[fromLower]);
+		// Loop through and spam them into chat
 		for(var a in global.tells[fromLower]){
 			global.bot.say(channel, global.tells[fromLower][a].sender+"=>"+from+": "+global.tells[fromLower][a].message);
 		}
+		// Delete their tell entry so that we don't think they have tells
 		delete global.tells[fromLower];
 	}
 }
 
 function lewdListen(from, channel, message){
+	// Look for the word "lewd" in messages, link to a reaction image if it's found
 	if(~message.indexOf("lewd")) global.bot.say(channel, "http://i.imgur.com/mgveyIr.png");
 }
 
