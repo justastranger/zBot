@@ -42,7 +42,7 @@ function lewd(from, channel, args){
 }
 
 function nick(from, channel, args){
-	global.bot.nick(args);
+	global.bot.changeNick(args);
 }
 
 global.declareCommand(asay, ["asay"], "owner");
