@@ -27,7 +27,6 @@ if(fs.existsSync(permFile)){ // Check for the file, if it exists, parse it. We d
 
 var prefix = "."; // This is the command prefix: ",kick" and ",ban"
 var nick = "justabot"; // The default nick to use
-				// TODO add a command to change nicks and remember the new nick(?)
 var server = "irc.esper.net"; // Server to connect to
 var options = {
 	userName: "justabot", // username for the bot
@@ -42,6 +41,8 @@ global.tells = {};
 var bot = new irc.Client(server, nick, options);
 // The IRC package I'm using doesn't come with functions for kicking, banning, or unbanning
 
+
+//TODO Maybe move the listeners to their own file?
 function commandListen(from, channel, message){
 	console.log(channel + "=>" + from + ": " + message);
 	if(message.indexOf(prefix) == 0){
