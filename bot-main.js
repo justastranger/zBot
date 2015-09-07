@@ -11,7 +11,7 @@ var rl = readline.createInterface({
 });
 // Evaluate the input (and log any errors)
 rl.on("line", function(cmd){
-	try{eval(cmd);}
+	try{console.log(eval(cmd));}
 	catch(e){console.log(e);}
 });
 // Globalize the object so that it can be closed as part of the disconnect command
@@ -25,7 +25,7 @@ if(fs.existsSync(permFile)){ // Check for the file, if it exists, parse it. We d
 	console.log(permissions); // Log known permissions on load
 }
 
-var prefix = ","; // This is the command prefix: ",kick" and ",ban"
+var prefix = "."; // This is the command prefix: ",kick" and ",ban"
 var nick = "justabot"; // The default nick to use
 				// TODO add a command to change nicks and remember the new nick(?)
 var server = "irc.esper.net"; // Server to connect to
@@ -34,7 +34,8 @@ var options = {
 	password: global.password, // Password to auth with, ssshhhhh
 	realName: "justastranger's bot", // Name to show in the whois
 	messageSplit: 512, // need moar chars
-	channels: ["#dirtylaundry"] // Default to my personal channel
+	channels: ["#dirtylaundry"], // Default to my personal channel
+	floodProtection: true
 };
 global.tells = {};
 
@@ -142,6 +143,10 @@ function checkPermissions(who, command){
 
 // All processed commands should have a function that takes arguments as (from, channel, args)
 function processCommand(command, from, channel, args){
+	if(global.commands[command] == undefined){
+		global.bot.say(channel, "That command does not exist.");
+		return;
+	}
 	var name;
 	// Query the server for who a person is so we don't have to rely on nicks that can change
 	// name = wait.for(global.bot.whois, from);
