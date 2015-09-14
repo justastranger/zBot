@@ -41,6 +41,11 @@ function lewd(from, channel, args){
 	global.bot.say(channel, "http://i.imgur.com/mgveyIr.png");
 }
 
+function seen(from, channel, args){
+	var tmp = args + " was last seen at " + global.seen[args];
+	global.bot.say(tmp);
+}
+
 function nick(from, channel, args){
 	global.bot.changeNick(args);
 }
@@ -52,3 +57,4 @@ global.declareCommand(say, ["say"], "anyone");
 global.declareCommand(action, ["do", "action"], "anyone");
 global.declareCommand(tell, ["tell"], "anyone");
 global.declareCommand(nick, ["nick", "name"], "owner");
+global.declareCommand(seen, ["seen"], "anyone");

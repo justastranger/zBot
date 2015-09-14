@@ -67,6 +67,12 @@ function tellListen(from, channel, message){
 	}
 }
 
+global.seen = {};
+
+function seenListen(from, channel, message){
+	global.seen[from] = new Date().toString();
+}
+
 function lewdListen(from, channel, message){
 	// Look for the word "lewd" in messages, link to a reaction image if it's found
 	if(~message.indexOf("lewd")) global.bot.say(channel, "http://i.imgur.com/mgveyIr.png");
@@ -75,6 +81,7 @@ function lewdListen(from, channel, message){
 bot.addListener("message#", commandListen);
 bot.addListener("message#", tellListen);
 bot.addListener("message#", lewdListen);
+bot.addListener("message#", seenListen);
 
 bot.addListener("invite", function(channel, from, message){
 	bot.join(channel);
