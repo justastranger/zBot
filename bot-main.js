@@ -36,11 +36,9 @@ var options = {
 	channels: ["#dirtylaundry"], // Default to my personal channel
 	floodProtection: true
 };
-global.tells = {};
 
 var bot = new irc.Client(server, nick, options);
 // The IRC package I'm using doesn't come with functions for kicking, banning, or unbanning
-
 
 //TODO Maybe move the listeners to their own file?
 function commandListen(from, channel, message){
@@ -51,6 +49,8 @@ function commandListen(from, channel, message){
 		wait.launchFiber(processCommand, command, from, channel, args);
 	}
 }
+
+global.tells = {};
 
 function tellListen(from, channel, message){
 	var fromLower = from.toLowerCase();
@@ -80,8 +80,8 @@ function lewdListen(from, channel, message){
 
 bot.addListener("message#", commandListen);
 bot.addListener("message#", tellListen);
-bot.addListener("message#", lewdListen);
 bot.addListener("message#", seenListen);
+bot.addListener("message#", lewdListen);
 
 bot.addListener("invite", function(channel, from, message){
 	bot.join(channel);
