@@ -20,7 +20,8 @@ var options = {
 	realName: "justastranger's bot", // Name to show in the whois
 	messageSplit: 512, // need moar chars
 	channels: ["#dirtylaundry"], // Default to my personal channel
-	floodProtection: true
+	floodProtection: true,
+	stripColors: true
 };
 
 var bot = new irc.Client(server, nick, options);
@@ -149,30 +150,38 @@ function checkPermissions(who, command){
 	return false;
 }
 
-
 // All processed commands should have a function that takes arguments as (from, channel, args)
+var nameTmp;
 function processCommand(command, from, channel, args){
 	if(global.commands[command] == undefined){
 		global.bot.say(channel, "That command does not exist.");
 		return;
 	}
-	var name;
+	nameTmp = undefined;
 	// Query the server for who a person is so we don't have to rely on nicks that can change
 	// name = wait.for(global.bot.whois, from);
 	global.bot.whois(from, function(data){
-		name = data.account;
+		nameTmp = data.account;
 	});
 
 	// This is essentially sleep(1000);
 	// It's because the whois is asynchronous, so we have to wait for it to execute the callback.
 	// 1000ms is generally a long enough wait.
-	setTimeout(function(){
-		if(name == undefined) console.log("elongate the wait");
-		//console.log(name + "->" + from) // debug line so we can see who the nick resolves to.
-		if (checkPermissions(name, command)){
-			global.commands[command](from, channel, args);
-		} else {
-			global.bot.say(channel, from + ": You do not have permission to do that.");
-		}
-	}, 1000);
+	setTimeout(function(){check(nameTmp, command, from, channel, args);}, 250);
+}
+
+function check(name, command, from, channel, args){
+	if(name == undefined) {
+		setTimeout(function(){check(nameTmp, command, from, channel, args);}, 250);
+	} else {
+		setTimeout(function(){
+			if (nameTmp == undefined) console.log("elongate the wait");
+			//console.log(name + "->" + from) // debug line so we can see who the nick resolves to.
+			if (checkPermissions(nameTmp, command)){
+				global.commands[command](from, channel, args);
+			} else {
+				global.bot.say(channel, from+": You do not have permission to do that.");
+			}
+		}, 250);
+	}
 }
