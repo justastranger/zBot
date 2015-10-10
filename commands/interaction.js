@@ -42,12 +42,20 @@ function lewd(from, channel, args){
 }
 
 function seen(from, channel, args){
+	if(global.seen[args] == undefined) {
+		global.bot.say(channel, "Who's that?");
+		return;
+	}
 	var tmp = args + " was last seen at " + global.seen[args];
-	global.bot.say(tmp);
+	global.bot.say(channel, tmp);
 }
 
 function nick(from, channel, args){
 	global.bot.changeNick(args);
+}
+
+function ping(from, channel, args){
+	global.bot.say(channel, args + ": PING PING PING");
 }
 
 global.declareCommand(asay, ["asay"], "owner");
@@ -58,3 +66,4 @@ global.declareCommand(action, ["do", "action"], "anyone");
 global.declareCommand(tell, ["tell"], "anyone");
 global.declareCommand(nick, ["nick", "name"], "owner");
 global.declareCommand(seen, ["seen"], "anyone");
+global.declareCommand(ping, ["ping"], "anyone");
