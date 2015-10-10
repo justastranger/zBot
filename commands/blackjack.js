@@ -20,8 +20,8 @@ function BlackJack() {
 		this.games[this.games.length - 1].players[from] = {
 			cards: [this.cards[Math.floor(Math.random() * this.cards.length)], this.cards[Math.floor(Math.random() * this.cards.length)]]
 		};
-		global.bot.say(channel, "If you want to join say ',blackjack join' further instructions will be send as private message");
-		global.bot.say(channel, from +" currently has the following cards: " + this.games[this.games.length - 1].players[from].cards.join(", ") + " which gives you a total of " + this.sum(this.games[this.games.length - 1].players[from].cards));
+		global.bot.say(channel, "If you want to join say '.blackjack join' further instructions will be spammed into chat");
+		global.bot.say(channel, from +" currently has the following cards: " + this.games[this.games.length - 1].players[from].cards.join(", ") + " which gives you a total of " + this.sum(this.games[this.games.length - 1].players[from].cards) + ", if you want another card say '.blackjack hit' if you want to stop say '.blackjack stay'");
 	};
 
 	this.commands = {};
@@ -34,17 +34,17 @@ function BlackJack() {
 		for (var key = 0; key < this.games.length; key++) {
 			if (this.games[key].playIn === channel) {
 				if (this.games[key].players[from]) {
-					global.bot.say(this.games[key].playIn, from + ", you already joined this game, say 'blackjack card' to get another card or 'blackjack done' if you are ready.");
+					global.bot.say(this.games[key].playIn, from + ", you already joined this game, say 'blackjack hit' to get another card or 'blackjack done' if you are ready.");
 					return;
 				} else {
 					this.games[key].players[from] = {
 						cards: [this.cards[Math.floor(Math.random() * this.cards.length)], this.cards[Math.floor(Math.random() * this.cards.length)]]
 					};
-					global.bot.say(this.games[key].playIn, from + " joined " + this.games[key].owner + "s game.");
+					global.bot.say(this.games[key].playIn, from + " has joined the game.");
 					var tmp = from+ " currently has the following cards: " + this.games[key].players[from].cards.join(", ") + " which gives him a total of " + this.sum(this.games[key].players[from].cards)
-					if (this.sum(this.games[key].players[from].cards) < 21) tmp += ", if you want another card say ',blackjack card' if you want to stop say ',blackjack done'"
+					if (this.sum(this.games[key].players[from].cards) < 21) tmp += ", if you want another card say '.blackjack hit' if you want to stop say '.blackjack stay'";
 					else {
-						this.commands.done(from, channel, args);
+						this.commands.stay(from, channel, args);
 						tmp += " since you have 21 or more, you've been marked as done."
 					}
 					global.bot.say(this.games[key].playIn, tmp);
@@ -55,7 +55,7 @@ function BlackJack() {
 		global.bot.say(channel, from + " there is no blackjack game in this room yet, why don't you start one?");
 	}.bind(this);
 
-	this.commands.card = function(from, channel, args) {
+	this.commands.hit = function(from, channel, args) {
 		for (var key = 0; key < this.games.length; key++) {
 			if (this.games[key].players[from] && !this.games[key].players[from].done) {
 				if (this.sum(this.games[key].players[from].cards) > 20) {
@@ -68,21 +68,21 @@ function BlackJack() {
 					var asdf = false;
 					this.games[key].players[from].cards.push(this.cards[Math.floor(Math.random() * this.cards.length)]);
 					var tmp = "You currently have the following cards: " + this.games[key].players[from].cards.join(", ") + " which gives you a total of " + this.sum(this.games[key].players[from].cards)
-					if (this.sum(this.games[key].players[from].cards) < 21) tmp += " if you want another card say 'blackjack card' if you want to stop say 'blackjack done'"
+					if (this.sum(this.games[key].players[from].cards) < 21) tmp += " if you want another card say '.blackjack card' if you want to stop say '.blackjack stay'";
 					else {
 						asdf = true;
 						tmp += " since you have 21 or more, you've been marked as done."
 					}
 					global.bot.say(this.games[key].playIn, tmp);
-					if(asdf) this.commands.done(from, channel, args);
+					if(asdf) this.commands.stay(from, channel, args);
 				}
 				return;
 			}
 		}
-		global.bot.say(channel, "You aren't playing any game yet, try 'blackjack join'.");
+		global.bot.say(channel, "You aren't playing any game yet, try '.blackjack join'.");
 	}.bind(this);
 
-	this.commands.done = function(from, channel, args) {
+	this.commands.stay = function(from, channel, args) {
 		for (var key = 0; key < this.games.length; key++) {
 			if (this.games[key].players[from] && !this.games[key].players[from].done) {
 				this.games[key].players[from].done = true;
@@ -146,7 +146,13 @@ function BlackJack() {
 		}
 		global.bot.say(channel, "Playing a blackjack game is simple. To start one simply type: ',blackjack start'");
 		global.bot.say(channel, "The goal is to get as close as possible to 21 but not going over, 1 counts as a 11 or a 1. When everyone goes over 21, the house wins.");
-		global.bot.say(channel, "The following commands are available (',blackjack' followed by): " + cmds.join(", "));
+		global.bot.say(channel, "The following commands are available ('.blackjack' followed by): " + cmds.join(", "));
+	}.bind(this);
+
+	this.commands.hand = function(from, channel, args){
+		for(var key = 0; key < this.games.length; key++){
+			if(this.games[key].players[from] != undefined) global.bot.say(channel, from + ": You currently have " + this.games[key].players[from].cards.join(", "));
+		}
 	}.bind(this);
 
 	this.finishGame = function(key) {
@@ -167,8 +173,14 @@ function BlackJack() {
 			}
 		}
 		global.bot.say(this.games[key].playIn, winner.name + " won with " + winner.points + ". The following people played: " + scores.join(', '));
-		this.games[key].players = {};
-		global.bot.say(this.games[key].playIn, "Next round has started, say ',blackjack join' to join");
+		global.bot.say(this.games[key].playIn, "Next round has started, everyone has been dealt new cards");
+		//this.games[key].players = {};
+		for(var x in this.games[key].players){
+			this.games[key].players[x] = {
+				cards: [this.cards[Math.floor(Math.random() * this.cards.length)], this.cards[Math.floor(Math.random() * this.cards.length)]]
+			};
+			global.bot.say(this.games[key].playIn, x + " currently has the following cards: " + this.games[key].players[x].cards.join(", ") + " which gives a total of " + this.sum(this.games[key].players[x].cards));
+		}
 		//this.games.splice(key, 1);
 	};
 
