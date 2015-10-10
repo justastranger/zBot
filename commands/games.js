@@ -36,10 +36,11 @@ global.declareCommand(skye, ["skye"], "anyone");
 
 var BlackJack = require("./blackjack.js");
 var blackjackObject = new BlackJack();
+global.bjo = blackjackObject;
 
 function bj(from, channel, args){
 	var subcommand = args.split(" ")[0];
-	if(blackjackObject.commands[subcommand] != undefined) blackjackObject.commands[subcommand](from, channel, args);
-	else blackjackObject.commands.help(from, channel, args);
+	if(global.bjo.commands[subcommand] != undefined) global.bjo.commands[subcommand](from, channel, args);
+	else global.bjo.commands.help(from, channel, args);
 }
 global.declareCommand(bj, ["blackjack", "bj"], "anyone");
