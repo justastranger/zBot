@@ -2,20 +2,6 @@ var irc = require("irc");
 var fs = require("fs");
 var wait = require("wait.for");
 var priv = require("./private.js");
-var readline = require("readline");
-
-// We're creating a readline interface so that we can manually input commands and code
-var rl = readline.createInterface({
-	input: process.stdin,
-	output: process.stdout
-});
-// Evaluate the input (and log any errors)
-rl.on("line", function(cmd){
-	try{console.log(eval(cmd));}
-	catch(e){console.log(e);}
-});
-// Globalize the object so that it can be closed as part of the disconnect command
-global.rl = rl;
 
 var permFile = "permissions.json";
 var permissions = {};
@@ -177,11 +163,11 @@ function processCommand(command, from, channel, args){
 		name = data.account;
 	});
 
-	// This is essentially sleep(250);
+	// This is essentially sleep(1000);
 	// It's because the whois is asynchronous, so we have to wait for it to execute the callback.
-	// 250ms is generally a long enough wait.
+	// 1000ms is generally a long enough wait.
 	setTimeout(function(){
-		if(name == undefined)console.log("elongate the wait");
+		if(name == undefined) console.log("elongate the wait");
 		//console.log(name + "->" + from) // debug line so we can see who the nick resolves to.
 		if (checkPermissions(name, command)){
 			global.commands[command](from, channel, args);

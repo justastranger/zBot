@@ -15,6 +15,7 @@ global.permLevels = {
 // The object that stored the alias:function objects
 global.commands = {};
 
+exports.cli = require("./cli.js");
 exports.administration = require("./administration.js");
 exports.interaction = require("./interaction.js");
 exports.movement = require("./movement.js");
