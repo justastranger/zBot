@@ -13,7 +13,8 @@ function google(from, channel, args){
 			global.bot.say(channel, err);
 			return;
 		}
-		global.bot.say(channel, (links[0].title + " - " + links[0].link + " - " + links[0].description.replace("\n","")));
+		if(links.length > 0) global.bot.say(channel, (links[0].title + " - " + links[0].link + " - " + links[0].description.replace("\n","")));
+		else global.bot.say(channel, "There's nothing there.");
 	})
 }
 
@@ -27,7 +28,8 @@ function gis(from, channel, args){
 			global.bot.say(channel, err);
 			return;
 		}
-		global.bot.say(channel, images[0].unescapedUrl);
+		if(images.length > 0) global.bot.say(channel, images[0].unescapedUrl);
+		else global.bot.say(channel, "There's nothing there.");
 	})
 }
 
@@ -45,7 +47,8 @@ function youtube(from, channel, args){
 			global.bot.say(channel, err);
 			return;
 		}
-		global.bot.say(channel, result[0].title + " - " + result[0].link + " - " + result[0].description);
+		if (result.length > 0) global.bot.say(channel, result[0].title + " - " + result[0].link + " - " + result[0].description);
+		else global.bot.say(channel, "There's nothing there.");
 	})
 	
 }
