@@ -2,6 +2,7 @@ var irc = require("irc");
 var fs = require("fs");
 var wait = require("wait.for");
 var priv = require("./private.js");
+var Promise = require("bluebird");
 
 var permFile = "permissions.json";
 var permissions = {};
@@ -160,9 +161,12 @@ function processCommand(command, from, channel, args){
 	nameTmp = undefined;
 	// Query the server for who a person is so we don't have to rely on nicks that can change
 	// name = wait.for(global.bot.whois, from);
-	global.bot.whois(from, function(data){
-		nameTmp = data.account;
-	});
+	var whois = Promise.promisify(global.bot.whois);
+	whois(from).then(function(data){nameTmp = data.account;});
+	//global.bot.whois(from, function(data, err){
+	//	if(err) throw(err);
+	//	nameTmp = data.account;
+	//});
 
 	// This is essentially sleep(1000);
 	// It's because the whois is asynchronous, so we have to wait for it to execute the callback.
