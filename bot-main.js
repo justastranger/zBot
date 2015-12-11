@@ -70,7 +70,7 @@ function logListen(from, channel, message){
 }
 
 function errorListener(message){
-	//console.log(message);
+	console.log(message);
 	if(message.command = "err_chanoprivsneeded"){
 		global.bot.say(message.args[1], "I'm sorry Dave, I'm afraid I can't do that")
 	}
@@ -177,7 +177,7 @@ function processCommand(command, from, channel, args){
 	}
 	whois(from).then(function(data){
 		var nameTmp = data.account;
-		console.log(nameTmp + ":" + from);
+		//console.log(nameTmp + ":" + from);
 		if (checkPermissions(nameTmp, command)){
 			global.commands[command](from, channel, args);
 		} else {
