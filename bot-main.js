@@ -69,11 +69,19 @@ function logListen(from, channel, message){
 	console.log(channel + "=>" + from + ": " + message);
 }
 
+function errorListener(message){
+	//console.log(message);
+	if(message.command = "err_chanoprivsneeded"){
+		global.bot.say(message.args[1], "I'm sorry Dave, I'm afraid I can't do that")
+	}
+}
+
 bot.addListener("message#", commandListen);
 bot.addListener("message#", tellListen);
 bot.addListener("message#", seenListen);
 bot.addListener("message#", lewdListen);
 bot.addListener("message#", logListen);
+bot.addListener("error", errorListener);
 
 bot.addListener("invite", function(channel, from, message){
 	bot.join(channel);
@@ -156,7 +164,6 @@ function checkPermissions(who, command){
 }
 
 // All processed commands should have a function that takes arguments as (from, channel, args)
-var nameTmp;
 function processCommand(command, from, channel, args){
 	if(global.commands[command] == undefined){
 		global.bot.say(channel, "That command does not exist.");
@@ -170,20 +177,11 @@ function processCommand(command, from, channel, args){
 	}
 	whois(from).then(function(data){
 		var nameTmp = data.account;
+		console.log(nameTmp + ":" + from);
 		if (checkPermissions(nameTmp, command)){
 			global.commands[command](from, channel, args);
 		} else {
 			global.bot.say(channel, from+": You do not have permission to do that.");
 		}
 	});
-}
-
-function check(name, command, from, channel, args){
-	if(name == undefined) {
-		setTimeout(function(){check(nameTmp, command, from, channel, args);}, 250);
-	} else {
-		setTimeout(function(){
-
-		}, 250);
-	}
 }
