@@ -1,6 +1,5 @@
 var irc = require("irc");
 var fs = require("fs");
-var wait = require("wait.for");
 var priv = require("./private.js");
 var Promise = require("bluebird");
 
@@ -30,11 +29,11 @@ var bot = new irc.Client(server, nick, options);
 
 //TODO Maybe move the listeners to their own file?
 function commandListen(from, channel, message){
-	console.log(channel + "=>" + from + ": " + message);
+	// Only do something if it's a .command
 	if(message.indexOf(prefix) == 0){
 		var args = message.substr(message.indexOf(" ")+1 ? message.indexOf(" ")+1 : message.length);
 		var command = message.substr(prefix.length, message.indexOf(" ")-prefix.length >= prefix.length ? message.indexOf(" ")-prefix.length : message.length - prefix.length);
-		wait.launchFiber(processCommand, command, from, channel, args);
+		processCommand(command, from, channel, args)
 	}
 }
 
@@ -66,10 +65,15 @@ function lewdListen(from, channel, message){
 	if(~message.indexOf("lewd")) global.bot.say(channel, "http://i.imgur.com/mgveyIr.png");
 }
 
+function logListen(from, channel, message){
+	console.log(channel + "=>" + from + ": " + message);
+}
+
 bot.addListener("message#", commandListen);
 bot.addListener("message#", tellListen);
 bot.addListener("message#", seenListen);
 bot.addListener("message#", lewdListen);
+bot.addListener("message#", logListen);
 
 bot.addListener("invite", function(channel, from, message){
 	bot.join(channel);
@@ -158,20 +162,20 @@ function processCommand(command, from, channel, args){
 		global.bot.say(channel, "That command does not exist.");
 		return;
 	}
-	nameTmp = undefined;
-	// Query the server for who a person is so we don't have to rely on nicks that can change
-	// name = wait.for(global.bot.whois, from);
-	var whois = Promise.promisify(global.bot.whois);
-	whois(from).then(function(data){nameTmp = data.account;});
-	//global.bot.whois(from, function(data, err){
-	//	if(err) throw(err);
-	//	nameTmp = data.account;
-	//});
-
-	// This is essentially sleep(1000);
-	// It's because the whois is asynchronous, so we have to wait for it to execute the callback.
-	// 1000ms is generally a long enough wait.
-	setTimeout(function(){check(nameTmp, command, from, channel, args);}, 250);
+	// Turn the bot.whois function into a promise so we can wait for the account name
+	function whois(who){
+		return new Promise(function(resolve, reject){
+			global.bot.whois(who, resolve)
+		})
+	}
+	whois(from).then(function(data){
+		var nameTmp = data.account;
+		if (checkPermissions(nameTmp, command)){
+			global.commands[command](from, channel, args);
+		} else {
+			global.bot.say(channel, from+": You do not have permission to do that.");
+		}
+	});
 }
 
 function check(name, command, from, channel, args){
@@ -179,13 +183,7 @@ function check(name, command, from, channel, args){
 		setTimeout(function(){check(nameTmp, command, from, channel, args);}, 250);
 	} else {
 		setTimeout(function(){
-			if (nameTmp == undefined) console.log("elongate the wait");
-			//console.log(name + "->" + from) // debug line so we can see who the nick resolves to.
-			if (checkPermissions(nameTmp, command)){
-				global.commands[command](from, channel, args);
-			} else {
-				global.bot.say(channel, from+": You do not have permission to do that.");
-			}
+
 		}, 250);
 	}
 }
