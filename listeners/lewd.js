@@ -3,4 +3,5 @@ function listener(from, channel, message){
 	if(~message.indexOf("lewd")) global.bot.say(channel, "http://i.imgur.com/mgveyIr.png");
 }
 
+exports.type = "message#";
 exports.listener = listener;

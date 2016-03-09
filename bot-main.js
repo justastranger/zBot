@@ -32,6 +32,9 @@ global.bot = bot; // Globally define the bot so that it can be affected from the
 var listeners = require("listeners");
 var com = require("./commands");
 
+for (var listener in listeners) {
+	if(listeners.hasOwnProperty(listener)) bot.addListener(listeners[listener].type, listeners[listener].listener);
+}
 
 global.permProcess = function(args, from, channel){
 	var argArray = args.split(" ");

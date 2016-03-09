@@ -44,4 +44,5 @@ function listener(from, channel, message){
 	}
 }
 
+exports.type = "message#";
 exports.listener = listener;
