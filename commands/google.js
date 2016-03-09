@@ -1,7 +1,7 @@
 var googleSearch = require("google");
 var googleImages = require("google-images");
 var youtubeSearch = require("youtube-search");
-var priv = require("../private.js");
+var privateStuff = require("../private.js");
 
 function google(from, channel, args){
 	if(args == "") {
@@ -40,7 +40,7 @@ function youtube(from, channel, args){
 	}
 	var opts = {
 		maxResults: 1,
-		key: priv.googleAPIKey
+		key: privateStuff.googleAPIKey
 	};
 	youtubeSearch(args, opts, function(err, result){
 		if (err) {

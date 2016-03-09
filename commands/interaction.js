@@ -20,7 +20,7 @@ function action(from, channel, args){
 
 function tell(from, channel, args){
 	if(args == "") {
-		global.bot.say(channel, "Do what?");
+		global.bot.say(channel, "Tell what to who?");
 		return;
 	}
 	var argArray = args.split(" ");
@@ -30,7 +30,7 @@ function tell(from, channel, args){
 	var t = {"sender": from, "message": message};
 	if(global.tells[target] == undefined) global.tells[target] = [t];
 	else global.tells[target].push(t);
-	global.bot.say(channel, "Okay, I'll tell that to "+target)
+	global.bot.say(channel, "Okay, I'll tell "+target+" that.")
 }
 
 function help(from, channel, args){

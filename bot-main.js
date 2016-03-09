@@ -1,6 +1,6 @@
 var irc = require("irc");
 var fs = require("fs");
-var priv = require("./private.js");
+var privateStuff = require("./private.js");
 var Promise = require("bluebird");
 
 var permFile = "permissions.json";
@@ -11,12 +11,12 @@ if(fs.existsSync(permFile)){ // Check for the file, if it exists, parse it. We d
 	console.log(permissions); // Log known permissions on load
 }
 
-var prefix = "."; // This is the command prefix: ",kick" and ",ban"
-var nick = "justabot"; // The default nick to use
+var prefix = "."; // This is the command prefix: ".kick" and ".ban", it's a variable so it can be changed in case of conflict.
+var nick = "[princealbert]"; // The default nick to use
 var server = "irc.esper.net"; // Server to connect to
 var options = {
 	userName: "justabot", // username for the bot
-	password: priv.password, // Password to auth with, ssshhhhh
+	password: privateStuff.password, // Password to auth with, ssshhhhh
 	realName: "justastranger's bot", // Name to show in the whois
 	messageSplit: 512, // need moar chars
 	channels: ["#dirtylaundry"], // Default to my personal channel
@@ -26,68 +26,11 @@ var options = {
 
 var bot = new irc.Client(server, nick, options);
 // The IRC package I'm using doesn't come with functions for kicking, banning, or unbanning
-
-//TODO Maybe move the listeners to their own file?
-function commandListen(from, channel, message){
-	// Only do something if it's a .command
-	if(message.indexOf(prefix) == 0){
-		var args = message.substr(message.indexOf(" ")+1 ? message.indexOf(" ")+1 : message.length);
-		var command = message.substr(prefix.length, message.indexOf(" ")-prefix.length >= prefix.length ? message.indexOf(" ")-prefix.length : message.length - prefix.length);
-		processCommand(command, from, channel, args)
-	}
-}
-
-global.tells = {};
-
-function tellListen(from, channel, message){
-	var fromLower = from.toLowerCase();
-	// Check to see if a person has tells
-	if(global.tells[fromLower] != undefined){
-		// Log them all for debug purposes
-		console.log(global.tells[fromLower]);
-		// Loop through and spam them into chat
-		for(var a in global.tells[fromLower]){
-			global.bot.say(channel, global.tells[fromLower][a].sender+"=>"+from+": "+global.tells[fromLower][a].message);
-		}
-		// Delete their tell entry so that we don't think they have tells
-		delete global.tells[fromLower];
-	}
-}
-
-global.seen = {};
-
-function seenListen(from, channel, message){
-	global.seen[from] = new Date().toString();
-}
-
-function lewdListen(from, channel, message){
-	// Look for the word "lewd" in messages, link to a reaction image if it's found
-	if(~message.indexOf("lewd")) global.bot.say(channel, "http://i.imgur.com/mgveyIr.png");
-}
-
-function logListen(from, channel, message){
-	console.log(channel + "=>" + from + ": " + message);
-}
-
-function errorListener(message){
-	console.log(message);
-	if(message.command = "err_chanoprivsneeded"){
-		global.bot.say(message.args[1], "I'm sorry Dave, I'm afraid I can't do that")
-	}
-}
-
-bot.addListener("message#", commandListen);
-bot.addListener("message#", tellListen);
-bot.addListener("message#", seenListen);
-bot.addListener("message#", lewdListen);
-bot.addListener("message#", logListen);
-bot.addListener("error", errorListener);
-
-bot.addListener("invite", function(channel, from, message){
-	bot.join(channel);
-	bot.say(channel, "Hello!")
-});
 global.bot = bot; // Globally define the bot so that it can be affected from the commands that are in different files
+
+// These are declared underneath the bot's declaration and globalization because they rely on both.
+var listeners = require("listeners");
+var com = require("./commands");
 
 
 global.permProcess = function(args, from, channel){
@@ -123,10 +66,11 @@ global.permProcess = function(args, from, channel){
 			console.log(permissions);
 			break;
 		case "list":
+			// Lists who has what permissions
 			global.bot.say(channel, JSON.stringify(permissions));
 			break;
 		case "commands":
-			//global.bot.say(channel, JSON.stringify(global.commandPerms));
+			// Lists the names of the commands registered (including their aliases)
 			global.bot.say(channel, Object.keys(global.commands));
 			break;
 	}
@@ -149,39 +93,3 @@ global.declareCommand = function(command, names, level){
 		global.commands[names[i]] = command; // Associate the aliases with the actual command
 	}
 };
-
-var com = require("./commands");
-
-// Checks the permission levels for the existence of an alias, if it finds one at or below the permission level of the nick sending the command, it returns true
-// Otherwise, it returns false, if either the command doesn't exist or the command sender doesn't have permission
-function checkPermissions(who, command){
-	// If who is undefined, meaning they aren't registered or authenticated with NickServ, we give them the lowest permission level.
-	var p = who != undefined && permissions[who.toLowerCase()] != undefined ? permissions[who.toLowerCase()] : 0;
-	for (var i = 0; i <= p; i++){
-		if (global.commandPerms[i].indexOf(command) > -1) return true;
-	}
-	return false;
-}
-
-// All processed commands should have a function that takes arguments as (from, channel, args)
-function processCommand(command, from, channel, args){
-	if(global.commands[command] == undefined){
-		global.bot.say(channel, "That command does not exist.");
-		return;
-	}
-	// Turn the bot.whois function into a promise so we can wait for the account name
-	function whois(who){
-		return new Promise(function(resolve, reject){
-			global.bot.whois(who, resolve)
-		})
-	}
-	whois(from).then(function(data){
-		var nameTmp = data.account;
-		//console.log(nameTmp + ":" + from);
-		if (checkPermissions(nameTmp, command)){
-			global.commands[command](from, channel, args);
-		} else {
-			global.bot.say(channel, from+": You do not have permission to do that.");
-		}
-	});
-}
