@@ -1,16 +1,13 @@
 function kick(from, channel, args){
-	var names = args.split(" ");
-	for(var i = 0; i < names.length; i++) global.bot.kick(channel, names[i]);
+	global.bot.kick(channel, args);
 }
 
 function ban(from, channel, args){
-	var names = args.split(" ");
-	for(var i = 0; i < names.length; i++) global.bot.ban(channel, names[i]);
+	global.bot.ban(channel, names[i]);
 }
 
 function unban(from, channel, args){
-	var names = args.split(" ");
-	for(var i = 0; i < names.length; i++) global.bot.unban(channel, names[i]);
+	global.bot.unban(channel, names[i]);
 }
 
 function kickban(from, channel, args){

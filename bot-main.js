@@ -10,8 +10,7 @@ if(fs.existsSync(permFile)){ // Check for the file, if it exists, parse it. We d
 	permissions = (JSON.parse(fs.readFileSync(permFile).toString()));
 	console.log(permissions); // Log known permissions on load
 }
-
-var prefix = "."; // This is the command prefix: ".kick" and ".ban", it's a variable so it can be changed in case of conflict.
+global.permissions = permissions;
 var nick = "[princealbert]"; // The default nick to use
 var server = "irc.esper.net"; // Server to connect to
 var options = {
@@ -25,16 +24,9 @@ var options = {
 };
 
 var bot = new irc.Client(server, nick, options);
+bot.prefix = "."; // This is the command prefix: ".kick" and ".ban", it's a variable so it can be changed in case of conflict.
 // The IRC package I'm using doesn't come with functions for kicking, banning, or unbanning
 global.bot = bot; // Globally define the bot so that it can be affected from the commands that are in different files
-
-// These are declared underneath the bot's declaration and globalization because they rely on both.
-var listeners = require("listeners");
-var com = require("./commands");
-
-for (var listener in listeners) {
-	if(listeners.hasOwnProperty(listener)) bot.addListener(listeners[listener].type, listeners[listener].listener);
-}
 
 global.permProcess = function(args, from, channel){
 	var argArray = args.split(" ");
@@ -96,3 +88,11 @@ global.declareCommand = function(command, names, level){
 		global.commands[names[i]] = command; // Associate the aliases with the actual command
 	}
 };
+
+var listeners = require("./listeners");
+
+for (var listener in listeners) {
+	if(listeners.hasOwnProperty(listener)) bot.addListener(listeners[listener].type, listeners[listener].listener);
+}
+
+var com = require("./commands");

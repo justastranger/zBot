@@ -25,3 +25,5 @@ exports.games = require("./games.js");
 
 // Should be an empty script unless something's actually being tested
 exports.test = require("./test.js");
+
+// TODO eventually start registering commands like listeners are registered

@@ -5,7 +5,7 @@
 // Otherwise, it returns false, if either the command doesn't exist or the command sender doesn't have permission
 function checkPermissions(who, command){
 	// If who is undefined, meaning they aren't registered or authenticated with NickServ, we give them the lowest permission level.
-	var p = who != undefined && permissions[who.toLowerCase()] != undefined ? permissions[who.toLowerCase()] : 0;
+	var p = who != undefined && global.permissions[who.toLowerCase()] != undefined ? global.permissions[who.toLowerCase()] : 0;
 	for (var i = 0; i <= p; i++){
 		if (global.commandPerms[i].indexOf(command) > -1) return true;
 	}
@@ -26,7 +26,6 @@ function processCommand(command, from, channel, args){
 	}
 	whois(from).then(function(data){
 		var nameTmp = data.account;
-		//console.log(nameTmp + ":" + from);
 		if (checkPermissions(nameTmp, command)){
 			global.commands[command](from, channel, args);
 		} else {
@@ -36,6 +35,7 @@ function processCommand(command, from, channel, args){
 }
 
 function listener(from, channel, message){
+	var prefix = global.bot.prefix;
 	// Only do something if it's a .command
 	if(message.indexOf(prefix) == 0){
 		var args = message.substr(message.indexOf(" ")+1 ? message.indexOf(" ")+1 : message.length);
