@@ -11,6 +11,15 @@ if(fs.existsSync(permFile)){ // Check for the file, if it exists, parse it. We d
 	console.log(permissions); // Log known permissions on load
 }
 global.permissions = permissions;
+
+var idleFile = "idleRPG.json";
+var idleRPG = {};
+if(fs.existsSync(idleFile)){ // Check for the file, if it exists, parse it. We don't expect any other process to ever access/change the file.
+	idleRPG = (JSON.parse(fs.readFileSync(idleFile).toString()));
+	console.log(idleRPG); // Log known idlers on load
+}
+global.idleRPG = idleRPG;
+
 var nick = "[princealbert]"; // The default nick to use
 var server = "irc.esper.net"; // Server to connect to
 var options = {
@@ -18,7 +27,7 @@ var options = {
 	password: privateStuff.password, // Password to auth with, ssshhhhh
 	realName: "justastranger's bot", // Name to show in the whois
 	messageSplit: 512, // need moar chars
-	channels: ["#dirtylaundry"], // Default to my personal channel
+	channels: ["#`"], // Default to my personal channel
 	floodProtection: true,
 	stripColors: true
 };
