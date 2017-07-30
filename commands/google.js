@@ -3,7 +3,7 @@ var googleImages = require("google-images");
 var youtubeSearch = require("youtube-search");
 var privateStuff = require("../private.js");
 
-function google(from, channel, args){
+function google(from, username, channel, args){
 	if(args == "") {
 		global.bot.say(channel, "Google for what?");
 		return;
@@ -18,7 +18,7 @@ function google(from, channel, args){
 	})
 }
 
-function gis(from, channel, args){
+function gis(from, username, channel, args){
 	if(args == ""){
 		global.bot.say(channel, "Search for what?");
 		return;
@@ -33,7 +33,7 @@ function gis(from, channel, args){
 	})
 }
 
-function youtube(from, channel, args){
+function youtube(from, username, channel, args){
 	if(args == ""){
 		global.bot.say(channel, "Search for what?");
 		return;

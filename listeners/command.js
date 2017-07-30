@@ -27,7 +27,7 @@ function processCommand(command, from, channel, args){
 	whois(from).then(function(data){
 		var nameTmp = data.account;
 		if (checkPermissions(nameTmp, command)){
-			global.commands[command](from, channel, args);
+			global.commands[command](from, nameTmp, channel, args);
 		} else {
 			global.bot.say(channel, from+": You do not have permission to do that.");
 		}

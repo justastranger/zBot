@@ -1,45 +1,45 @@
-function kick(from, channel, args){
+function kick(from, username, channel, args){
 	global.bot.kick(channel, args);
 }
 
-function ban(from, channel, args){
+function ban(from, username, channel, args){
 	global.bot.ban(channel, names[i]);
 }
 
-function unban(from, channel, args){
+function unban(from, username, channel, args){
 	global.bot.unban(channel, names[i]);
 }
 
-function kickban(from, channel, args){
+function kickban(from, username, channel, args){
 	kick(from, channel, args);
 	ban(from, channel, args);
 }
 
-function quiet(from, channel, args){
+function quiet(from, username, channel, args){
 	global.bot.quiet(channel, args);
 }
 
-function unquiet(from, channel, args){
+function unquiet(from, username, channel, args){
 	global.bot.unquiet(channel, args);
 }
 
-function op(from, channel, args){
+function op(from, username, channel, args){
 	global.bot.op(channel, args);
 }
 
-function deop(from, channel, args){
+function deop(from, username, channel, args){
 	global.bot.deop(channel, args);
 }
 
-function voice(from, channel, args){
+function voice(from, username, channel, args){
 	global.bot.voice(channel, args);
 }
 
-function devoice(from, channel, args){
+function devoice(from, username, channel, args){
 	global.bot.devoice(channel, args);
 }
 
-function perm(from, channel, args){
+function perm(from, username, channel, args){
 	global.permProcess(args, from, channel);
 }
 

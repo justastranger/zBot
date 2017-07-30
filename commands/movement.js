@@ -1,4 +1,4 @@
-function join(from, channel, args){
+function join(from, username, channel, args){
 	if(args == "") {
 		global.bot.say(channel, "Join what?");
 		return;
@@ -7,11 +7,11 @@ function join(from, channel, args){
 }
 
 // Parts from the current channel
-function part(from, channel, args){
+function part(from, username, channel, args){
 	global.bot.part(channel, args != "" ? args : "Goodbye...");
 }
 
-function disconnect(from, channel, args){
+function disconnect(from, username, channel, args){
 	global.rl.close();
 	global.bot.disconnect(args != "" ? args : "Goodbye...");
 	process.exit();

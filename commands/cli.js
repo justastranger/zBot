@@ -22,8 +22,7 @@ function action(what){
 }
 
 function close(args){
-	if(args == undefined) args = "";
 	rl.close();
-	global.bot.disconnect(args != "" ? args : "Goodbye...");
+	global.bot.disconnect(args != undefined ? args : "Goodbye...");
 	process.exit();
 }

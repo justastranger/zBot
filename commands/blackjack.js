@@ -1,13 +1,13 @@
-function bjListener(from, channel, message){
+function bjListener(from, username, channel, message){
 	message = message.toLowerCase();
-	if(global.bjo.commands[message] != undefined) global.bjo.commands[message](from, channel, "");
+	if(global.bjo.commands[message] != undefined) global.bjo.commands[message](from, username, channel, "");
 }
 
 function BlackJack() {
 	this.games = [];
 	this.cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10];
 
-	this.start = function(from, channel, args) {
+	this.start = function(from, username, channel, args) {
 		// Bot should only start blackjack in its own channel!
 		for (var key = 0; key < this.games.length; key++) {
 			if (this.games[key].playIn === channel) {
@@ -34,11 +34,11 @@ function BlackJack() {
 
 	this.commands = {};
 
-	this.commands.start = function(from, channel, args, command) {
+	this.commands.start = function(from, username, channel, args, command) {
 		this.start(from, channel);
 	}.bind(this);
 
-	this.commands.join = function(from, channel, args) {
+	this.commands.join = function(from, username, channel, args) {
 		for (var key = 0; key < this.games.length; key++) {
 			if (this.games[key].playIn === channel) {
 				if (this.games[key].players[from]) {
@@ -63,7 +63,7 @@ function BlackJack() {
 		global.bot.notice(from, from + " there is no blackjack game in this room yet, why don't you start one?");
 	}.bind(this);
 
-	this.commands.hit = function(from, channel, args) {
+	this.commands.hit = function(from, username, channel, args) {
 		for (var key = 0; key < this.games.length; key++) {
 			if (this.games[key].players[from] && !this.games[key].players[from].done) {
 				if (this.sum(this.games[key].players[from].cards) > 20) {
@@ -90,7 +90,7 @@ function BlackJack() {
 		global.bot.notice(channel, "You aren't playing any game yet, try 'join'.");
 	}.bind(this);
 
-	this.commands.stand = function(from, channel, args) {
+	this.commands.stand = function(from, username, channel, args) {
 		for (var key = 0; key < this.games.length; key++) {
 			if (this.games[key].players[from] && !this.games[key].players[from].done) {
 				this.games[key].players[from].done = true;
@@ -103,7 +103,7 @@ function BlackJack() {
 		}
 	}.bind(this);
 
-	this.commands.forceEnd = function(from, channel, args) {
+	this.commands.forceEnd = function(from, username, channel, args) {
 		for (var key = 0; key < this.games.length; key++) {
 			if (this.games[key].playIn === channel) {
 				if (this.games[key].started < Date.now() - 180000) {
@@ -115,7 +115,7 @@ function BlackJack() {
 		}
 	}.bind(this);
 
-	this.commands.status = function(from, channel, args) {
+	this.commands.status = function(from, username, channel, args) {
 		for (var key = 0; key < this.games.length; key++) {
 			if (this.games[key].playIn === channel) {
 				var players = [];
@@ -132,7 +132,7 @@ function BlackJack() {
 		}
 	}.bind(this);
 
-	this.commands.disband = function(from, channel, args) {
+	this.commands.disband = function(from, username, channel, args) {
 		var count = 0;
 		for (var key = 0; key < this.games.length; key++) {
 			if (this.games[key].owner === from) {
@@ -145,7 +145,7 @@ function BlackJack() {
 		global.bot.removeListener("message#", bjListener);
 	}.bind(this);
 
-	this.commands.help = function(from, channel, args) {
+	this.commands.help = function(from, username, channel, args) {
 		var sayTo = channel, cmds = [];
 		if (sayTo === global.bot.nick) {
 			sayTo = from;
@@ -158,13 +158,13 @@ function BlackJack() {
 		global.bot.notice(from, "The following commands are available ('.blackjack' followed by): " + cmds.join(", "));
 	}.bind(this);
 
-	this.commands.hand = function(from, channel, args){
+	this.commands.hand = function(from, username, channel, args){
 		for(var key = 0; key < this.games.length; key++){
 			if(this.games[key].players[from] != undefined) global.bot.notice(from, from + ": You currently have " + this.games[key].players[from].cards.join(", ") + ", which gives a total of: " + this.sum(this.games[key].players[from].cards));
 		}
 	}.bind(this);
 
-	this.commands.leave = function(from, channel, args){
+	this.commands.leave = function(from, username, channel, args){
 		for(var key = 0; key < this.games.length; key++){
 			delete this.games[key].players[from];
 		}

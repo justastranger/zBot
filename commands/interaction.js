@@ -1,4 +1,4 @@
-function say(from, channel, args){
+function say(from, username, channel, args){
 	if(args == "") {
 		global.bot.say(channel, "Say what?");
 		return;
@@ -6,11 +6,11 @@ function say(from, channel, args){
 	global.bot.say(channel, from + ": " + args);
 }
 
-function asay(from, channel, args){
+function asay(from, username, channel, args){
 	global.bot.say(channel, args);
 }
 
-function action(from, channel, args){
+function action(from, username, channel, args){
 	if(args == "") {
 		global.bot.say(channel, "Do what?");
 		return;
@@ -18,7 +18,7 @@ function action(from, channel, args){
 	global.bot.action(channel, args);
 }
 
-function tell(from, channel, args){
+function tell(from, username, channel, args){
 	if(args == "") {
 		global.bot.say(channel, "Tell what to who?");
 		return;
@@ -33,15 +33,15 @@ function tell(from, channel, args){
 	global.bot.say(channel, "Okay, I'll tell "+target+" that.")
 }
 
-function help(from, channel, args){
+function help(from, username, channel, args){
 	global.bot.say(channel, "The supported commands are: "+ Object.keys(global.commands).join(", "));
 }
 
-function lewd(from, channel, args){
+function lewd(from, username, channel, args){
 	global.bot.say(channel, "http://i.imgur.com/mgveyIr.png");
 }
 
-function seen(from, channel, args){
+function seen(from, username, channel, args){
 	if(global.seen[args] == undefined) {
 		global.bot.say(channel, "Who's that?");
 		return;
@@ -50,11 +50,11 @@ function seen(from, channel, args){
 	global.bot.say(channel, tmp);
 }
 
-function nick(from, channel, args){
+function nick(from, username, channel, args){
 	global.bot.changeNick(args);
 }
 
-function ping(from, channel, args){
+function ping(from, username, channel, args){
 	global.bot.say(channel, args + ": PING PING PING");
 }
 
