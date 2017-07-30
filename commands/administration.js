@@ -3,11 +3,11 @@ function kick(from, username, channel, args){
 }
 
 function ban(from, username, channel, args){
-	global.bot.ban(channel, names[i]);
+	global.bot.ban(channel, args);
 }
 
 function unban(from, username, channel, args){
-	global.bot.unban(channel, names[i]);
+	global.bot.unban(channel, args);
 }
 
 function kickban(from, username, channel, args){
