@@ -1,19 +1,19 @@
-var fs = require("fs");
+let fs = require("fs");
 
 function roll(from, username, channel, args){
-	var reg = new RegExp("(\\d+)d(\\d+)");
+	let reg = new RegExp("(\\d+)d(\\d+)");
 	if (!reg.test(args)){
 		global.bot.say(channel, "That isn't a dice roll...");
 		return;
 	}
-	var result = (function(args){
-		var result = args.match(reg);
-		var amount = Number(result[1]);
-		var kind = Number(result[2]);
-		var total = 0;
-		var rolls = [];
-		var roll;
-		for (var i = 0; i < amount; i++){
+	let result = (function(args){
+		let result = args.match(reg);
+		let amount = Number(result[1]);
+		let kind = Number(result[2]);
+		let total = 0;
+		let rolls = [];
+		let roll;
+		for (let i = 0; i < amount; i++){
 			roll = Math.ceil(Math.random() * kind);
 			total += roll;
 			rolls.push(roll);
@@ -24,9 +24,9 @@ function roll(from, username, channel, args){
 }
 
 function skye(from, username, channel, args){
-	var users = global.bot.chanData(channel).users;
-	var userArray = [];
-	for (var a in users){
+	let users = global.bot.chanData(channel).users;
+	let userArray = [];
+	for (let a in users){
 		userArray.push(a.toLowerCase());
 	}
 	if(~userArray.indexOf("skye")) global.bot.say(channel, "Hi Skye!");
@@ -35,10 +35,10 @@ function skye(from, username, channel, args){
 
 function idleRPG(from, username, channel, args){
 
-    var now = Date.now();
-    var tmpIdler = global.idleRPG[username];
-    var levels = (function (){
-                     	var levelArray = [],
+    let now = Date.now();
+    let tmpIdler = global.idleRPG[username];
+    let levels = (function (){
+                     	let levelArray = [],
                      	points = 0;
 
                      	for (lvl = 1; lvl <= 200; lvl++) {
@@ -54,7 +54,7 @@ function idleRPG(from, username, channel, args){
         fs.writeFileSync("idleRPG.json", JSON.stringify(global.idleRPG)); // Save IdleRPG stuff to file so it persists in a way that hopefully works?
     }
 
-    if(tmpIdler!=undefined){ // If this person exists in our database of idlers
+    if(tmpIdler!==undefined){ // If this person exists in our database of idlers
         if(now >= tmpIdler.nextLevel){
             tmpIdler.level += 1; // increment their level
             tmpIdler.nextLevel = now+(levels[tmpIdler.level+1]*1000) // move to the next time increment in the array and add onto the current time
@@ -88,14 +88,17 @@ function idleRPG(from, username, channel, args){
 // Declare all aliases of the command
 global.declareCommand(roll, ["roll", "die", "d"], "anyone");
 global.declareCommand(skye, ["skye"], "anyone");
-global.declareCommand(idleRPG, ["level"], "anyone");
+global.declareCommand(idleRPG, ["level", ">"], "anyone");
 
-var BlackJack = require("./blackjack.js");
+let BlackJack = require("./blackjack.js");
 global.bjo = new BlackJack();
 
 function bj(from, username, channel, args){
-	var subcommand = args.split(" ")[0];
-	if(global.bjo.commands[subcommand] != undefined) global.bjo.commands[subcommand](from, channel, args);
+	let subcommand = args.split(" ")[0];
+	if(global.bjo.commands[subcommand] !== undefined) global.bjo.commands[subcommand](from, channel, args);
 	else global.bjo.commands.help(from, channel, args);
 }
 global.declareCommand(bj, ["blackjack", "bj"], "anyone");
+
+let cah = require("../cah");
+global.declareCommand(cah.handler, ["cards", "cah"], "anyone");
