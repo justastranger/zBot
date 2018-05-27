@@ -9,3 +9,4 @@ exports.lewd = require("./lewd.js");
 exports.log = require("./log.js");
 exports.seen = require("./seen.js");
 exports.tell = require("./tell.js");
+exports.youtubeInfo = require("./youtube.js");
