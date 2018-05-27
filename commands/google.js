@@ -1,6 +1,7 @@
 var googleSearch = require("google");
 var googleImages = require("google-images");
 var youtubeSearch = require("youtube-search");
+var youtubeInfo = require("youtube-info");
 var privateStuff = require("../private.js");
 
 function google(from, username, channel, args){
@@ -50,6 +51,11 @@ function youtube(from, username, channel, args){
 		if (result.length > 0) global.bot.say(channel, result[0].title + " - " + result[0].link + " - " + result[0].description);
 		else global.bot.say(channel, "There's nothing there.");
 	})
+	
+}
+
+function youtubeInfo(from, username, channel, args){
+	
 	
 }
 
